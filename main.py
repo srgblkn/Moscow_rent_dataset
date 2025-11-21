@@ -8,7 +8,19 @@ import re
 USD_TO_RUB = 80.15
 EUR_TO_RUB = 92.44
 
-df = pd.read_csv('/Users/sergei/Downloads/_data.csv', low_memory=False)
+@st.cache_data(ttl=3600)  # Кэшируем на 1 час
+def load_data():
+    url = "https://drive.google.com/uc?export=download&id=1UJPCI3378UT7yP3gqqFRkr0mJ-rmXPeV"
+    try:
+        st.info("Загружаем данные с Google Drive... (~50–70 МБ, первый раз может занять 10–20 сек)")
+        df = pd.read_csv(url, low_memory=False)
+        st.success("Данные успешно загружены с Google Drive!")
+        return df
+    except Exception as e:
+        st.error(f"Ошибка загрузки данных: {e}")
+        st.stop()
+
+df = load_data()
 
 def parse_price(x):
     s = str(x)
